@@ -1,5 +1,8 @@
 import { ContextGraphViz, CopyButton, FeatureMatrix, InstallTabs, Reveal } from "./components";
+import { FAQS } from "./faqs";
+import { GitHubIcon } from "./logo";
 import { LINKS, VERSION } from "./links";
+import { SiteNav } from "./nav";
 
 const EDITORS = ["VS Code", "JetBrains", "Neovim", "Sublime", "Zed", "Terminal"];
 
@@ -56,33 +59,6 @@ const APPROACH_PITFALLS = [
   },
 ];
 
-const FAQS = [
-  {
-    q: "Does my code leave my machine?",
-    a: "No. The graph, session memory, and context packs are stored in .vinemap/ inside your project. The MCP server runs locally over stdio — no code, no file names, no project data is ever sent externally.",
-  },
-  {
-    q: "Which AI tools does Vinemap work with?",
-    a: "Claude Code, Codex CLI, Cursor, Gemini CLI, GitHub Copilot, OpenCode, and any other MCP-compatible agent. The same install works across all of them.",
-  },
-  {
-    q: "Do I need to run something every session?",
-    a: "No. Run `vinemap index .` once, then `vinemap connect <agent>` — after that your agent talks to the local server automatically, and the graph re-syncs incrementally as files change.",
-  },
-  {
-    q: "What happens when my files change?",
-    a: "Only touched files are re-parsed thanks to content-hash caching, so updates are sub-second on most projects. No manual rebuilds.",
-  },
-  {
-    q: "What do I get in Pro?",
-    a: "Up to 1M files per project, crash diagnosis with blast-radius analysis, decision & WHY memory across sessions, coverage confidence scores, and codebase-health tools (circular deps, dead exports). $10/month, cancel anytime.",
-  },
-  {
-    q: "How does Teams work?",
-    a: "Teams adds a shared graph across your organization's repos with per-developer views and shared decision memory — self-hosted or in your VPC, priced per seat.",
-  },
-];
-
 const RUN_CMD = "vinemap index . && vinemap connect cursor";
 
 /* simple tile glyphs (16px stroke icons) */
@@ -96,6 +72,8 @@ function Glyph({ kind }: { kind: string }) {
     strokeWidth: 1.8,
     strokeLinecap: "round" as const,
     strokeLinejoin: "round" as const,
+    "aria-hidden": true as const,
+    role: "presentation" as const,
   };
   switch (kind) {
     case "burst":
@@ -163,49 +141,12 @@ const AGENT_TILES: { name: string; glyph: string }[] = [
   { name: "Antigravity", glyph: "peak" },
 ];
 
-function Logo({ size = 24 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 32 32" fill="none" aria-hidden="true">
-      <path d="M6 26V13c0-4 3-7 7-7" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
-      <path d="M26 26V13c0-4-3-7-7-7" stroke="#5865f2" strokeWidth="3" strokeLinecap="round" />
-      <circle cx="16" cy="6" r="3" fill="currentColor" />
-    </svg>
-  );
-}
-
-function GitHubIcon() {
-  return (
-    <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
-      <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z" />
-    </svg>
-  );
-}
-
 export default function Home() {
   return (
     <>
-      <nav className="nav animate-nav">
-        <div className="container nav-inner">
-          <a className="brand" href={LINKS.site}>
-            <Logo />
-            Vinemap
-          </a>
-          <div className="nav-links">
-            <a href="#install">Install</a>
-            <a href="#hood">How it works</a>
-            <a href="#compare">Compare</a>
-            <a href="#pricing">Pricing</a>
-            <a href="#faq">FAQ</a>
-            <a href={LINKS.pypi} target="_blank" rel="noopener noreferrer">PyPI</a>
-            <a className="btn btn-white" href={LINKS.github} target="_blank" rel="noopener noreferrer">
-              <GitHubIcon />
-              GitHub
-            </a>
-            <a className="btn btn-green" href="#install">Install Free</a>
-          </div>
-        </div>
-      </nav>
+      <SiteNav />
 
+      <main id="main-content">
       <header className="hero-zone">
         <div className="container">
           <div className="announce-pill animate-hero-pill">
@@ -268,11 +209,11 @@ export default function Home() {
       </section>
 
       <Reveal>
-      <section className="section install-section" id="install">
+      <section className="section install-section" id="install" aria-labelledby="install-heading">
         <div className="container">
           <div className="install-header center">
             <span className="kicker">Get started</span>
-            <h2 className="h2">Install in under a minute.</h2>
+            <h2 className="h2" id="install-heading">Install in under a minute.</h2>
             <p className="lede">
               One global install via{" "}
               <a href={LINKS.pypi} target="_blank" rel="noopener noreferrer">PyPI</a>
@@ -370,11 +311,11 @@ export default function Home() {
       </Reveal>
 
       <Reveal>
-      <section className="section" id="hood" style={{ paddingTop: 0 }}>
+      <section className="section" id="hood" style={{ paddingTop: 0 }} aria-labelledby="hood-heading">
         <div className="container">
           <div className="center">
             <span className="kicker">Under the hood</span>
-            <h2 className="h2">A dual graph of your project.</h2>
+            <h2 className="h2" id="hood-heading">A dual graph of your project.</h2>
             <p className="lede">
               Vinemap builds two layers — a structural map of your code and a live memory of
               your session — and uses both to deliver precise context.
@@ -459,11 +400,11 @@ export default function Home() {
       </Reveal>
 
       <Reveal>
-      <section className="section compare-section" id="compare" style={{ paddingTop: 0 }}>
+      <section className="section compare-section" id="compare" style={{ paddingTop: 0 }} aria-labelledby="compare-heading">
         <div className="container">
           <div className="compare-header center">
             <span className="kicker">Compare</span>
-            <h2 className="h2">Why a graph beats a dump, a map, or a cloud.</h2>
+            <h2 className="h2" id="compare-heading">Why a graph beats a dump, a map, or a cloud.</h2>
             <p className="lede">
               Repo dumps send everything. Embedding RAG guesses by similarity. Cloud engines
               need your code on their servers. Vinemap routes <b>exact structural context</b> locally.
@@ -497,6 +438,7 @@ export default function Home() {
           </div>
 
           <FeatureMatrix rows={COMPARISON} />
+          <p className="matrix-scroll-hint">← Swipe to compare features →</p>
           <div className="agent-chips compare-langs">
             {LANGS.map((l) => (
               <span className="chip" key={l}>{l}</span>
@@ -507,11 +449,11 @@ export default function Home() {
       </Reveal>
 
       <Reveal>
-      <section className="section" id="pricing" style={{ paddingTop: 0 }}>
+      <section className="section" id="pricing" style={{ paddingTop: 0 }} aria-labelledby="pricing-heading">
         <div className="container">
           <div className="center">
             <span className="kicker">Pricing</span>
-            <h2 className="h2">Start free. Scale when you need it.</h2>
+            <h2 className="h2" id="pricing-heading">Start free. Scale when you need it.</h2>
           </div>
           <div className="pricing">
             <div className="plan">
@@ -590,11 +532,11 @@ export default function Home() {
       </Reveal>
 
       <Reveal>
-      <section className="section" id="faq" style={{ paddingTop: 0 }}>
+      <section className="section" id="faq" style={{ paddingTop: 0 }} aria-labelledby="faq-heading">
         <div className="container">
           <div className="center">
             <span className="kicker">FAQ</span>
-            <h2 className="h2">Frequently asked questions</h2>
+            <h2 className="h2" id="faq-heading">Frequently asked questions</h2>
           </div>
           <div className="faq">
             {FAQS.map((f) => (
@@ -622,10 +564,12 @@ export default function Home() {
       </div>
       </Reveal>
 
+      </main>
+
       <footer>
         <div className="container footer-inner">
           <span>Vinemap — the context layer for AI coding agents · 100% local</span>
-          <nav>
+          <nav aria-label="Footer">
             <a href="#install">Install</a>
             <a href={LINKS.pypi} target="_blank" rel="noopener noreferrer">PyPI</a>
             <a href={LINKS.githubDocs} target="_blank" rel="noopener noreferrer">Docs</a>
