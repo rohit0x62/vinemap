@@ -1,0 +1,37 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "vinemap"
+version = "0.1.0"
+description = "Vinemap — a local-first, graph-based context engine for AI coding agents"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "Apache-2.0" }
+authors = [{ name = "WINK" }]
+keywords = ["ai", "context", "mcp", "code-graph", "llm", "coding-agent"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Topic :: Software Development",
+]
+# Core engine is dependency-free (stdlib only) so install is instant and
+# works offline. Tree-sitter is an optional extra for precise parsing.
+dependencies = []
+
+[project.urls]
+Homepage = "https://vinemap.dev"
+Repository = "https://github.com/rohit0x62/vinemap"
+Issues = "https://github.com/rohit0x62/vinemap/issues"
+
+[project.optional-dependencies]
+treesitter = ["tree-sitter>=0.23", "tree-sitter-language-pack>=0.7"]
+dev = ["pytest>=8.0"]
+
+[project.scripts]
+vinemap = "vinemap.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["vinemap"]
