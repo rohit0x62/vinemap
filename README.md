@@ -11,7 +11,7 @@ Fewer tokens. Better answers. Nothing leaves your machine.
 
 - **PyPI:** [pypi.org/project/vinemap](https://pypi.org/project/vinemap/)
 - **GitHub:** [github.com/rohit0x62/vinemap](https://github.com/rohit0x62/vinemap)
-- **Website:** [vinemap.dev](https://vinemap.dev)
+- **Website:** [vinemap.xyz](https://vinemap.xyz)
 
 ---
 

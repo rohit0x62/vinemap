@@ -22,7 +22,7 @@ classifiers = [
 dependencies = []
 
 [project.urls]
-Homepage = "https://vinemap.dev"
+Homepage = "https://vinemap.xyz"
 Repository = "https://github.com/rohit0x62/vinemap"
 Issues = "https://github.com/rohit0x62/vinemap/issues"
 

@@ -53,7 +53,7 @@ v0 base in this repo.
 
 ## Phase 3 — Launch (1–2 weeks, overlaps phase 2)
 
-- [x] Name the product: **Vinemap** — verified free on PyPI (404), npm (404), and vinemap.dev (no DNS records) as of Aug 2026; rename applied repo-wide. Register the domain + PyPI/npm names ASAP to lock them.
+- [x] Name the product: **Vinemap** — verified free on PyPI (404), npm (404) as of Aug 2026; domain registered at **vinemap.xyz**. Register PyPI/npm names ASAP to lock them.
 - [ ] Publish GitHub repo (Apache-2.0 engine), CONTRIBUTING, issue templates
 - [ ] Docs site (/docs): install, per-agent guides, how-it-works, troubleshooting per OS
 - [ ] Benchmarks page: run the eval harness, publish raw prompts + transcripts + methodology (reproducibility is the credibility moat)

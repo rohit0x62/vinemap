@@ -57,7 +57,7 @@ Python (AST), TypeScript, JavaScript, Go, Rust, Java, C/C++, C#, Ruby, PHP, Kotl
 
 - **GitHub:** [github.com/rohit0x62/vinemap](https://github.com/rohit0x62/vinemap)
 - **Docs & roadmap:** [github.com/rohit0x62/vinemap/tree/main/docs](https://github.com/rohit0x62/vinemap/tree/main/docs)
-- **Website:** [vinemap.dev](https://vinemap.dev)
+- **Website:** [vinemap.xyz](https://vinemap.xyz)
 
 ## License
 

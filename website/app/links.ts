@@ -9,7 +9,7 @@ export const LINKS = {
     "https://raw.githubusercontent.com/rohit0x62/vinemap/main/installers/install.ps1",
   pypi: "https://pypi.org/project/vinemap/",
   pypiVersion: "https://pypi.org/project/vinemap/0.1.1/",
-  site: "https://vinemap.dev",
+  site: "https://vinemap.xyz",
   contact: "mailto:winklogiq@gmail.com?subject=Vinemap",
   community: "https://github.com/rohit0x62/vinemap/discussions",
 } as const;
