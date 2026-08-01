@@ -1,4 +1,5 @@
 import { ContextGraphViz, CopyButton, FeatureMatrix, InstallTabs, Reveal } from "./components";
+import { LINKS, VERSION } from "./links";
 
 const EDITORS = ["VS Code", "JetBrains", "Neovim", "Sublime", "Zed", "Terminal"];
 
@@ -185,7 +186,7 @@ export default function Home() {
     <>
       <nav className="nav animate-nav">
         <div className="container nav-inner">
-          <a className="brand" href="#">
+          <a className="brand" href={LINKS.site}>
             <Logo />
             Vinemap
           </a>
@@ -195,7 +196,8 @@ export default function Home() {
             <a href="#compare">Compare</a>
             <a href="#pricing">Pricing</a>
             <a href="#faq">FAQ</a>
-            <a className="btn btn-white" href="https://github.com/rohit0x62/vinemap">
+            <a href={LINKS.pypi} target="_blank" rel="noopener noreferrer">PyPI</a>
+            <a className="btn btn-white" href={LINKS.github} target="_blank" rel="noopener noreferrer">
               <GitHubIcon />
               GitHub
             </a>
@@ -207,11 +209,13 @@ export default function Home() {
       <header className="hero-zone">
         <div className="container">
           <div className="announce-pill animate-hero-pill">
-            <span>
-              <i className="dot" />
-              Now works with OpenAI Codex · Claude Code · Cursor · Copilot
-              <em>→</em>
-            </span>
+            <a href={LINKS.pypi} target="_blank" rel="noopener noreferrer">
+              <span>
+                <i className="dot" />
+                v{VERSION} on PyPI · works with Codex · Claude Code · Cursor · Copilot
+                <em>→</em>
+              </span>
+            </a>
           </div>
 
           <div className="hero-card animate-hero-card">
@@ -231,10 +235,10 @@ export default function Home() {
                 </div>
                 <div className="hero-ctas animate-hero-ctas">
                   <a className="btn btn-green" href="#install">Install Free →</a>
-                  <a className="btn btn-white" href="https://github.com/rohit0x62/vinemap">
+                  <a className="btn btn-white" href={LINKS.github} target="_blank" rel="noopener noreferrer">
                     <GitHubIcon />
                     View on GitHub
-                    <span className="count">v0.1</span>
+                    <span className="count">v{VERSION}</span>
                   </a>
                 </div>
                 <p className="hero-note animate-hero-note">
@@ -270,7 +274,11 @@ export default function Home() {
             <span className="kicker">Get started</span>
             <h2 className="h2">Install in under a minute.</h2>
             <p className="lede">
-              One global install, then run on any project. <b>Python 3.9+</b> is the only requirement.
+              One global install via{" "}
+              <a href={LINKS.pypi} target="_blank" rel="noopener noreferrer">PyPI</a>
+              {" "}or our{" "}
+              <a href={LINKS.github} target="_blank" rel="noopener noreferrer">GitHub</a>
+              {" "}installers, then run on any project. <b>Python 3.9+</b> is the only requirement.
             </p>
             <div className="install-stats">
               {INSTALL_STATS.map((stat) => (
@@ -545,7 +553,7 @@ export default function Home() {
                 <li>Priority onboarding</li>
                 <li>Direct support</li>
               </ul>
-              <a className="btn btn-white" href="mailto:hello@example.com">Talk to us</a>
+              <a className="btn btn-white" href={LINKS.contact}>Talk to us</a>
             </div>
           </div>
         </div>
@@ -560,19 +568,21 @@ export default function Home() {
               <span className="live"><i />LIVE NOW</span>
               <h3>Join the Vinemap community</h3>
               <p>
-                Connect with other developers, share your setup, and get help configuring
-                Vinemap for your specific codebase. We&rsquo;d love to hear how you use it.
+                Connect with other developers on{" "}
+                <a href={LINKS.community} target="_blank" rel="noopener noreferrer">GitHub Discussions</a>
+                , share your setup, and get help configuring Vinemap for your codebase.
               </p>
-              <a className="btn btn-discord" href="#">Join the Discord</a>
+              <a className="btn btn-discord" href={LINKS.community} target="_blank" rel="noopener noreferrer">GitHub Discussions</a>
             </div>
             <div className="duo-card">
               <span className="live"><i />REAL FEEDBACK</span>
               <h3>Got feedback or ideas?</h3>
               <p>
-                We read every message and reply personally. Custom plan, larger codebase, or
-                just want to talk through your setup — no sales funnel, just a conversation.
+                We read every message. Open a{" "}
+                <a href={LINKS.githubIssues} target="_blank" rel="noopener noreferrer">GitHub issue</a>
+                {" "}or email us — custom plans, larger codebases, or setup help.
               </p>
-              <a className="btn btn-white" href="mailto:hello@example.com">Send us a note</a>
+              <a className="btn btn-white" href={LINKS.githubIssues} target="_blank" rel="noopener noreferrer">Open an issue</a>
             </div>
           </div>
         </div>
@@ -617,9 +627,12 @@ export default function Home() {
           <span>Vinemap — the context layer for AI coding agents · 100% local</span>
           <nav>
             <a href="#install">Install</a>
+            <a href={LINKS.pypi} target="_blank" rel="noopener noreferrer">PyPI</a>
+            <a href={LINKS.githubDocs} target="_blank" rel="noopener noreferrer">Docs</a>
             <a href="#pricing">Pricing</a>
             <a href="#faq">FAQ</a>
-            <a href="https://github.com/rohit0x62/vinemap">GitHub</a>
+            <a href={LINKS.github} target="_blank" rel="noopener noreferrer">GitHub</a>
+            <a href={LINKS.githubIssues} target="_blank" rel="noopener noreferrer">Issues</a>
           </nav>
         </div>
       </footer>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
+import { LINKS } from "./links";
 
 export function CopyButton({ text }: { text: string }) {
   const [copied, setCopied] = useState(false);
@@ -26,8 +27,10 @@ const OS_TABS = [
     lang: "bash",
     copy: "pip install vinemap",
     lines: [
-      { c: "comment", t: "# one install — pure Python, zero dependencies" },
+      { c: "comment", t: "# PyPI — pure Python, zero dependencies" },
       { c: "cmd", t: "$ pip install vinemap" },
+      { c: "comment", t: "# or one-line installer from GitHub" },
+      { c: "cmd", t: `$ curl -fsSL ${LINKS.githubInstallSh} | bash` },
     ],
   },
   {
@@ -36,8 +39,10 @@ const OS_TABS = [
     lang: "powershell",
     copy: "pip install vinemap",
     lines: [
-      { c: "comment", t: "# PowerShell — Python 3.9+ from python.org or the py launcher" },
+      { c: "comment", t: "# PyPI — Python 3.9+ from python.org or the py launcher" },
       { c: "cmd", t: "> pip install vinemap" },
+      { c: "comment", t: "# or one-line installer from GitHub" },
+      { c: "cmd", t: `> irm ${LINKS.githubInstallPs1} | iex` },
     ],
   },
 ];

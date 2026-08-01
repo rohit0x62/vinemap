@@ -1,7 +1,13 @@
 {
   "name": "vinemap-website",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
+  "homepage": "https://vinemap.dev",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rohit0x62/vinemap.git",
+    "directory": "website"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
