@@ -12,6 +12,9 @@ build/
 .vinemap/
 .trellis/
 
+# Marketing site — maintained in a separate private repo (deploy via AWS)
+website/
+
 # Node / Next.js
 node_modules/
 .next/

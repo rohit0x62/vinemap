@@ -19,13 +19,7 @@ pytest tests -q -m "not slow"
 python eval/run_eval.py --all
 ```
 
-Website (static export):
-
-```bash
-cd website
-npm install
-npm run build
-```
+Website (static export) lives in a **separate private repo** — not this one. After eval changes, copy `eval-data.json` from `python eval/export_results.py` into that repo before deploy.
 
 ## What to work on
 
@@ -34,12 +28,12 @@ Check [docs/ROADMAP.md](docs/ROADMAP.md) and open [good first issues](https://gi
 - Retrieval quality (golden eval cases in `engine/eval/golden/`)
 - Language parsers (`engine/vinemap/scanner/parsers/`)
 - Agent integrations (`engine/vinemap/agents/`)
-- Docs and website (`website/app/docs/`)
+- Engine docs (`docs/`)
 
 ## Pull request checklist
 
 1. **Tests** — `pytest` passes; add tests for behavior changes.
-2. **Eval** — if ranking changes, run `python eval/run_eval.py --all` and update golden sets or `website/app/benchmarks/eval-data.json` via `python eval/export_results.py`.
+2. **Eval** — if ranking changes, run `python eval/run_eval.py --all` and update golden sets. Export benchmark JSON with `python eval/export_results.py` for the marketing site repo.
 3. **Scope** — one logical change per PR; avoid drive-by refactors.
 4. **Style** — match surrounding code; imports at top of file.
 

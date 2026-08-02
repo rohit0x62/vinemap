@@ -127,7 +127,6 @@ Vinemap works with any tool that supports MCP or can consume a context pack:
 | [`engine/vinemap/pack/`](engine/vinemap/pack/) | Token-budgeted context packer |
 | [`engine/vinemap/memory/`](engine/vinemap/memory/) | Session memory |
 | [`engine/vinemap/mcp/`](engine/vinemap/mcp/) | MCP server (stdio) |
-| [`website/`](website/) | Marketing site (Next.js static export) |
 | [`installers/`](installers/) | One-line install scripts |
 | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | System design |
 | [`docs/ROADMAP.md`](docs/ROADMAP.md) | Build & launch roadmap |
