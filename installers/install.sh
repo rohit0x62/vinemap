@@ -44,17 +44,34 @@ say "installing into $VINEMAP_HOME"
 mkdir -p "$HOME/.local/bin"
 ln -sf "$VINEMAP_HOME/venv/bin/vinemap" "$HOME/.local/bin/vinemap"
 
-case ":$PATH:" in
-  *":$HOME/.local/bin:"*) ;;
-  *)
-    SHELL_RC="$HOME/.zshrc"
-    [ -n "${BASH_VERSION:-}" ] && SHELL_RC="$HOME/.bashrc"
-    echo 'export PATH="$HOME/.local/bin:$PATH"' >> "$SHELL_RC"
-    say "added ~/.local/bin to PATH in $SHELL_RC — run: source $SHELL_RC"
-    ;;
-esac
+shell_rc() {
+  case "${SHELL:-}" in
+    */zsh) echo "$HOME/.zshrc" ;;
+    */bash) echo "$HOME/.bashrc" ;;
+    *) echo "$HOME/.profile" ;;
+  esac
+}
+
+ensure_local_bin_path() {
+  local bin="$HOME/.local/bin"
+  case ":$PATH:" in
+    *":$bin:"*) return 0 ;;
+  esac
+  local rc
+  rc=$(shell_rc)
+  touch "$rc"
+  if grep -qF '.local/bin' "$rc" 2>/dev/null; then
+    say "~/.local/bin already listed in $rc — run: source $rc"
+    return 0
+  fi
+  echo 'export PATH="$HOME/.local/bin:$PATH"' >> "$rc"
+  say "added ~/.local/bin to PATH in $rc — run: source $rc"
+}
+
+ensure_local_bin_path
 
 say "installed. Get started:"
 echo "    cd your-project"
-echo "    vinemap index .      # build the code graph"
-echo "    vinemap mcp .        # start the MCP server for your agent"
+echo "    vinemap quickstart     # index, connect agent, try a query"
+echo "    vinemap index .        # or build the code graph manually"
+echo "    vinemap mcp .          # start the MCP server for your agent"

@@ -1,0 +1,23 @@
+{
+  "name": "fixture_auth_python",
+  "description": "Python auth fixture (password hashing, sessions)",
+  "k": 5,
+  "min_mean_precision": 0.8,
+  "cases": [
+    {
+      "query": "password hashing salt",
+      "fixture": "auth",
+      "expected": ["app/auth.py"]
+    },
+    {
+      "query": "get user from database",
+      "fixture": "auth",
+      "expected": ["app/db.py"]
+    },
+    {
+      "query": "login handler typescript",
+      "fixture": "auth",
+      "expected": ["web.ts"]
+    }
+  ]
+}

@@ -62,11 +62,14 @@ def build_context_pack(
     budget_tokens: int = DEFAULT_BUDGET_TOKENS,
     k: int = 12,
     memory: Optional[SessionMemory] = None,
+    include_coverage: bool = False,
 ) -> Tuple[str, List[str]]:
     """Build the injectable context block. Returns (pack_text, included_paths)."""
-    ranked = rank_files(graph, query, k=k, memory=memory)
+    ranked = rank_files(graph, query, k=k, memory=memory, project_root=root)
     if not ranked:
         return "", []
+
+    coverage_line = ""
 
     header = (
         "<codebase_context>\n"
@@ -117,7 +120,16 @@ def build_context_pack(
             memory.touch(path, "retrieved")
         memory.save()
 
-    parts = [header, "\n\n".join(summaries)]
+    if include_coverage:
+        from vinemap.pro.coverage import coverage_score
+
+        score, inc_n, uni_n = coverage_score(graph, query, included, k=k)
+        coverage_line = f"Coverage: {score}% ({inc_n}/{uni_n} relevant files in pack)\n"
+
+    parts = [header]
+    if coverage_line:
+        parts.append(coverage_line)
+    parts.append("\n\n".join(summaries))
     if code_blocks:
         parts.append("\n## Most relevant code\n" + "\n\n".join(code_blocks))
     if memory is not None and memory.recent_decisions():

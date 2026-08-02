@@ -1,0 +1,28 @@
+{
+  "name": "fixture_ts_api",
+  "description": "TypeScript storefront API fixture (Stripe checkout)",
+  "k": 5,
+  "min_mean_precision": 0.8,
+  "cases": [
+    {
+      "query": "Stripe payment intent checkout",
+      "fixture": "ts-api",
+      "expected": ["src/payments/stripe.ts", "src/handlers/checkout.ts"]
+    },
+    {
+      "query": "validate cart items total",
+      "fixture": "ts-api",
+      "expected": ["src/cart/validate.ts"]
+    },
+    {
+      "query": "webhook signature verification",
+      "fixture": "ts-api",
+      "expected": ["src/payments/stripe.ts"]
+    },
+    {
+      "query": "order service place order",
+      "fixture": "ts-api",
+      "expected": ["src/handlers/checkout.ts"]
+    }
+  ]
+}

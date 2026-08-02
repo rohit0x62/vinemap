@@ -1,0 +1,28 @@
+{
+  "name": "fixture_go_service",
+  "description": "Go HTTP service fixture (JWT auth, user store)",
+  "k": 5,
+  "min_mean_precision": 0.8,
+  "cases": [
+    {
+      "query": "JWT login handler",
+      "fixture": "go-service",
+      "expected": ["internal/auth/login.go"]
+    },
+    {
+      "query": "validate password credentials",
+      "fixture": "go-service",
+      "expected": ["internal/auth/login.go"]
+    },
+    {
+      "query": "list users handler",
+      "fixture": "go-service",
+      "expected": ["internal/store/users.go"]
+    },
+    {
+      "query": "health check endpoint",
+      "fixture": "go-service",
+      "expected": ["cmd/server/main.go"]
+    }
+  ]
+}

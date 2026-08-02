@@ -19,7 +19,11 @@ from vinemap import __version__
 from vinemap.graph.model import CodeGraph
 from vinemap.graph.store import load_graph
 from vinemap.memory.session import SessionMemory
-from vinemap.pack.packer import build_context_pack
+from vinemap.guardrails import Guardrails
+from vinemap.pack.packer import build_context_pack, estimate_tokens
+from vinemap.pro.audit import audit_symbol
+from vinemap.pro.diagnose import diagnose_stack_trace, format_diagnosis
+from vinemap.pro.health import find_circular_imports, find_dead_exports
 from vinemap.rank.ranker import rank_files
 
 PROTOCOL_VERSION = "2024-11-05"
@@ -92,12 +96,42 @@ TOOLS = [
     },
 ]
 
+PRO_TOOLS = [
+    {
+        "name": "graph_diagnose",
+        "description": "Analyze a stack trace → root-cause files + blast radius from the call/import graph.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {"trace": {"type": "string", "description": "Stack trace text"}},
+            "required": ["trace"],
+        },
+    },
+    {
+        "name": "graph_health",
+        "description": "Circular import cycles and likely dead exports.",
+        "inputSchema": {"type": "object", "properties": {}},
+    },
+    {
+        "name": "graph_audit",
+        "description": "Exhaustive find-all for a symbol name across the codebase.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {"symbol": {"type": "string"}},
+            "required": ["symbol"],
+        },
+    },
+]
+
 
 class McpServer:
     def __init__(self, root: str):
         self.root = os.path.abspath(root)
         self.graph: Optional[CodeGraph] = load_graph(self.root)
         self.memory = SessionMemory(self.root)
+        self.guardrails = Guardrails()
+
+    def _tools_list(self) -> list:
+        return list(TOOLS) + list(PRO_TOOLS)
 
     # -- tool implementations ------------------------------------------------
 
@@ -107,6 +141,10 @@ class McpServer:
         return self.graph
 
     def tool_graph_retrieve(self, args: Dict[str, Any]) -> str:
+        ok, hint = self.guardrails.check_retrieve()
+        if not ok:
+            raise ValueError(hint or "retrieve budget exhausted")
+        self.guardrails.record_retrieve()
         graph = self._require_graph()
         query = _clean_query(args)
         pack, included = build_context_pack(
@@ -115,9 +153,13 @@ class McpServer:
             query,
             budget_tokens=_clean_budget(args),
             memory=self.memory,
+            include_coverage=True,
         )
+        if pack:
+            self.memory.record_tokens(estimate_tokens(pack), "retrieve")
+            self.memory.save()
         if not pack:
-            ranked = rank_files(graph, query, k=5)
+            ranked = rank_files(graph, query, k=5, project_root=self.root)
             if not ranked:
                 stats = graph.stats()
                 return (
@@ -133,9 +175,11 @@ class McpServer:
         graph = self._require_graph()
         path = _clean_path(args)
         if path not in graph.files:
-            # Lookup is dict-membership only — arbitrary/traversal paths can
-            # never reach the filesystem here.
             return f"File not in index: {path}"
+        ok, hint = self.guardrails.check_read(path)
+        if not ok:
+            raise ValueError(hint or "read budget exhausted")
+        self.guardrails.record_read(path)
         pf = graph.files[path]
         nb = graph.neighbors(path)
         self.memory.touch(path, "read")
@@ -143,9 +187,45 @@ class McpServer:
         lines = [f"{path} ({pf.language}, {pf.line_count} lines)"]
         lines.append(f"imports: {nb['imports']}")
         lines.append(f"imported_by: {nb['imported_by']}")
+        if nb.get("calls"):
+            lines.append(f"calls: {nb['calls']}")
+        if nb.get("called_by"):
+            lines.append(f"called_by: {nb['called_by']}")
+        if hint:
+            lines.append(f"hint: {hint}")
+        grep_hint = self.guardrails.grep_hint()
+        if grep_hint:
+            lines.append(f"hint: {grep_hint}")
         for s in pf.symbols:
             lines.append(f"  L{s.line_start}-{s.line_end} {s.signature or s.name} [{s.kind}]")
         return "\n".join(lines)
+
+    def tool_graph_diagnose(self, args: Dict[str, Any]) -> str:
+        trace = args.get("trace", "")
+        if not isinstance(trace, str) or not trace.strip():
+            raise ValueError("'trace' must be a non-empty string")
+        report = diagnose_stack_trace(self._require_graph(), trace)
+        return format_diagnosis(report)
+
+    def tool_graph_health(self, _args: Dict[str, Any]) -> str:
+        graph = self._require_graph()
+        cycles = find_circular_imports(graph)
+        dead = find_dead_exports(graph)
+        lines = [f"circular_imports: {len(cycles)}", f"dead_exports: {len(dead)}"]
+        for c in cycles[:5]:
+            lines.append(f"cycle: {' → '.join(c)}")
+        for d in dead[:10]:
+            lines.append(f"dead: {d['path']}:{d['line']} {d['symbol']}")
+        return "\n".join(lines)
+
+    def tool_graph_audit(self, args: Dict[str, Any]) -> str:
+        symbol = args.get("symbol", "")
+        if not isinstance(symbol, str) or not symbol.strip():
+            raise ValueError("'symbol' required")
+        hits = audit_symbol(self._require_graph(), self.root, symbol.strip())
+        if not hits:
+            return f"No hits for {symbol!r}"
+        return "\n".join(f"{h['path']}:{h['line']} [{h['kind']}] {h['detail']}" for h in hits)
 
     def tool_graph_neighbors(self, args: Dict[str, Any]) -> str:
         graph = self._require_graph()
@@ -172,7 +252,7 @@ class McpServer:
         if method == "notifications/initialized":
             return None
         if method == "tools/list":
-            return _result(msg_id, {"tools": TOOLS})
+            return _result(msg_id, {"tools": self._tools_list()})
         if method == "tools/call":
             name = params.get("name", "")
             if not isinstance(name, str) or not name.replace("_", "").isalnum():

@@ -57,6 +57,8 @@ class PythonParser:
         except SyntaxError:
             return result
 
+        result.module_docstring = (ast.get_docstring(tree) or "")[:500]
+
         for node in ast.walk(tree):
             if isinstance(node, ast.Import):
                 result.imports.extend(alias.name for alias in node.names)

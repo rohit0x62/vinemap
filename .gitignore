@@ -22,3 +22,11 @@ next-env.d.ts
 # OS / editor
 .DS_Store
 .idea/
+.cursor/
+engine/.cursor/
+
+# PyPI / secrets (never commit)
+engine/.pypi.env
+.pypi.env
+**/pypi-token
+.cursor/mcp.publish.json

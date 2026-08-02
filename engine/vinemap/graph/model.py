@@ -18,7 +18,29 @@ class CodeGraph:
         self.files: Dict[str, ParsedFile] = {}
         self.import_edges: Dict[str, Set[str]] = defaultdict(set)  # file -> files it imports
         self.imported_by: Dict[str, Set[str]] = defaultdict(set)   # reverse edges
+        self.call_edges: Dict[str, Set[str]] = defaultdict(set)    # file -> files it calls into
+        self.called_by: Dict[str, Set[str]] = defaultdict(set)
         self.symbol_index: Dict[str, List[str]] = defaultdict(list)  # symbol name -> [paths]
+        self._lazy_db_path: Optional[str] = None
+
+    @property
+    def lazy(self) -> bool:
+        return self._lazy_db_path is not None
+
+    def ensure_file(self, path: str) -> Optional[ParsedFile]:
+        """Load full symbols for a lazily-indexed file from SQLite."""
+        pf = self.files.get(path)
+        if pf is None:
+            return None
+        if pf.symbols or not self._lazy_db_path:
+            return pf
+        from vinemap.graph.sqlite_store import load_file_sqlite
+
+        loaded = load_file_sqlite(self._lazy_db_path, path)
+        if loaded is not None:
+            self.files[path] = loaded
+            return loaded
+        return pf
 
     # -- construction ------------------------------------------------------
 
@@ -33,6 +55,8 @@ class CodeGraph:
     def _resolve_edges(self) -> None:
         self.import_edges.clear()
         self.imported_by.clear()
+        self.call_edges.clear()
+        self.called_by.clear()
         self.symbol_index.clear()
 
         # Index: module-ish keys -> path. e.g. "src/app/db.py" is reachable as
@@ -56,6 +80,14 @@ class CodeGraph:
                     self.imported_by[target].add(path)
             for sym in pf.symbols:
                 self.symbol_index[sym.name.lower()].append(path)
+
+        for path, pf in self.files.items():
+            for sym in pf.symbols:
+                for callee in sym.calls:
+                    for target in self.symbol_index.get(callee.lower(), []):
+                        if target != path:
+                            self.call_edges[path].add(target)
+                            self.called_by[target].add(path)
 
     def _resolve_import(
         self, spec: str, base_dir: str, module_index: Dict[str, str]
@@ -88,17 +120,26 @@ class CodeGraph:
     # -- queries -----------------------------------------------------------
 
     def neighbors(self, path: str) -> Dict[str, List[str]]:
+        self.ensure_file(path)
         return {
             "imports": sorted(self.import_edges.get(path, set())),
             "imported_by": sorted(self.imported_by.get(path, set())),
+            "calls": sorted(self.call_edges.get(path, set())),
+            "called_by": sorted(self.called_by.get(path, set())),
         }
 
     def degree(self, path: str) -> int:
-        return len(self.import_edges.get(path, ())) + len(self.imported_by.get(path, ()))
+        return (
+            len(self.import_edges.get(path, ()))
+            + len(self.imported_by.get(path, ()))
+            + len(self.call_edges.get(path, ()))
+            + len(self.called_by.get(path, ()))
+        )
 
     def stats(self) -> dict:
         n_symbols = sum(len(pf.symbols) for pf in self.files.values())
         n_edges = sum(len(v) for v in self.import_edges.values())
+        n_call_edges = sum(len(v) for v in self.call_edges.values())
         langs: Dict[str, int] = defaultdict(int)
         for pf in self.files.values():
             langs[pf.language] += 1
@@ -106,6 +147,7 @@ class CodeGraph:
             "files": len(self.files),
             "symbols": n_symbols,
             "import_edges": n_edges,
+            "call_edges": n_call_edges,
             "languages": dict(sorted(langs.items(), key=lambda kv: -kv[1])),
         }
 

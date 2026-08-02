@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: GitHub Discussions
+    url: https://github.com/rohit0x62/vinemap/discussions
+    about: Ask questions, share setups, and discuss ideas
+  - name: Documentation
+    url: https://vinemap.xyz/docs
+    about: Install guides, agent setup, troubleshooting

@@ -2,7 +2,6 @@ import json
 import os
 import subprocess
 import sys
-import textwrap
 
 import pytest
 
@@ -15,46 +14,6 @@ from vinemap.pack.packer import build_context_pack, estimate_tokens
 from vinemap.rank.ranker import rank_files
 from vinemap.scanner.parsers import get_parser
 from vinemap.scanner.walker import scan_project
-
-
-@pytest.fixture
-def project(tmp_path):
-    """A tiny multi-language project."""
-    (tmp_path / "app").mkdir()
-    (tmp_path / "app" / "auth.py").write_text(textwrap.dedent('''
-        """Authentication helpers."""
-        from app.db import get_user
-
-        def hash_password(password: str, salt: str = "") -> str:
-            """Hash a password with the given salt."""
-            return password + salt
-
-        def login(username: str, password: str) -> bool:
-            user = get_user(username)
-            return user is not None and hash_password(password) == user
-
-        class SessionManager:
-            def create_session(self, user_id: int) -> str:
-                return str(user_id)
-    '''))
-    (tmp_path / "app" / "db.py").write_text(textwrap.dedent('''
-        USERS = {}
-
-        def get_user(username: str):
-            return USERS.get(username)
-    '''))
-    (tmp_path / "web.ts").write_text(textwrap.dedent('''
-        import { login } from "./app/auth";
-
-        export function handleLogin(req: Request): Response {
-            return new Response("ok");
-        }
-
-        export class ApiServer {
-            start() {}
-        }
-    '''))
-    return str(tmp_path)
 
 
 def _index(root):
@@ -261,3 +220,41 @@ def test_cli_end_to_end(project):
     )
     assert r.returncode == 0, r.stderr
     assert "app/auth.py" in r.stdout
+
+
+def test_cli_quickstart_non_interactive(project):
+    env = dict(os.environ)
+    env["PYTHONPATH"] = os.path.join(os.path.dirname(__file__), "..")
+    r = subprocess.run(
+        [
+            sys.executable, "-m", "vinemap.cli", "quickstart", project,
+            "--agent", "cursor", "--query", "password hashing", "-y",
+        ],
+        capture_output=True, text=True, env=env,
+    )
+    assert r.returncode == 0, r.stderr
+    assert "Step 1/3" in r.stdout
+    assert "app/auth.py" in r.stdout
+    assert "wrote" in r.stdout
+    assert os.path.isfile(os.path.join(project, ".cursor", "mcp.json"))
+
+
+def test_pro_commands_work_without_license(project):
+    pytest.importorskip("cryptography")
+    env = dict(os.environ)
+    env["PYTHONPATH"] = os.path.join(os.path.dirname(__file__), "..")
+    env["HOME"] = project  # no license file
+    r = subprocess.run(
+        [sys.executable, "-m", "vinemap.cli", "index", project],
+        capture_output=True, text=True, env=env,
+    )
+    assert r.returncode == 0, r.stderr
+    for cmd in (
+        ["health", project],
+        ["audit", "login", project],
+    ):
+        r = subprocess.run(
+            [sys.executable, "-m", "vinemap.cli", *cmd],
+            capture_output=True, text=True, env=env,
+        )
+        assert r.returncode == 0, (cmd, r.stderr)

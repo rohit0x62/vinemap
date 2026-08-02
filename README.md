@@ -12,6 +12,9 @@ Fewer tokens. Better answers. Nothing leaves your machine.
 - **PyPI:** [pypi.org/project/vinemap](https://pypi.org/project/vinemap/)
 - **GitHub:** [github.com/rohit0x62/vinemap](https://github.com/rohit0x62/vinemap)
 - **Website:** [vinemap.xyz](https://vinemap.xyz)
+- **Docs:** [vinemap.xyz/docs](https://vinemap.xyz/docs)
+- **Benchmarks:** [vinemap.xyz/benchmarks](https://vinemap.xyz/benchmarks)
+- **Discussions:** [github.com/rohit0x62/vinemap/discussions](https://github.com/rohit0x62/vinemap/discussions)
 
 ---
 
@@ -152,7 +155,7 @@ twine check dist/*
 ## FAQ
 
 **Is Vinemap free?**  
-Yes. The core engine is open source (Apache-2.0) and free to use. Pro features (crash diagnosis, team graphs) are planned — see [docs/PRICING.md](docs/PRICING.md).
+Yes. The core engine is open source (Apache-2.0) and completely free for individual developers — no file limits, no account required. All features (diagnosis, audit, health checks, MCP tools) are included. Teams plans for orgs are coming later.
 
 **Does Vinemap send my code to the cloud?**  
 No. Indexing, ranking, and packing all run on your machine. The `.vinemap/` index stays in your project directory.
@@ -171,4 +174,4 @@ Apache-2.0 — see [LICENSE](LICENSE).
 
 ## Status
 
-**v0.1.0** — working end-to-end: index → rank → pack → MCP. See [docs/ROADMAP.md](docs/ROADMAP.md) for what's next.
+**v0.1.2** — working end-to-end: index → rank → pack → MCP. Free for individual developers; Teams pricing coming later.

@@ -10,7 +10,7 @@ from typing import Tuple
 
 from vinemap.graph.store import atomic_write_json
 
-AGENTS = ("cursor", "claude", "gemini", "codex")
+AGENTS = ("cursor", "claude", "gemini", "codex", "copilot", "opencode")
 
 
 def _server_entry(root: str) -> dict:
@@ -75,5 +75,18 @@ def connect_agent(agent: str, root: str) -> Tuple[bool, str]:
         return False, (
             "Codex CLI uses a global config. Add this to ~/.codex/config.toml:\n\n"
             + snippet
+            + f"\nOr run `vinemap codex` to write {root}/.codex/config.toml (project-local)."
+        )
+    if agent == "copilot":
+        path = _merge_mcp_json(os.path.join(root, ".vscode", "mcp.json"), root)
+        return True, (
+            f"wrote {path}\n"
+            "Also run `vinemap copilot` for .github/copilot-instructions.md."
+        )
+    if agent == "opencode":
+        path = _merge_mcp_json(os.path.join(root, ".opencode", "mcp.json"), root)
+        return True, (
+            f"wrote {path}\n"
+            "Also run `vinemap opencode` for .opencode/rules/vinemap.md."
         )
     raise SystemExit(f"error: unknown agent '{agent}' (choose from: {', '.join(AGENTS)})")

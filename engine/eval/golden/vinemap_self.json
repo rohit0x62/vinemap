@@ -1,0 +1,62 @@
+{
+  "name": "vinemap_self",
+  "description": "Golden retrieval queries for the Vinemap engine repository (dogfooded)",
+  "project": "..",
+  "k": 5,
+  "min_mean_precision": 0.85,
+  "cases": [
+    {
+      "query": "MCP server",
+      "expected": ["engine/vinemap/mcp/server.py"]
+    },
+    {
+      "query": "password hashing",
+      "fixture": "auth",
+      "expected": ["app/auth.py"]
+    },
+    {
+      "query": "license activation",
+      "expected": ["engine/vinemap/license.py"]
+    },
+    {
+      "query": "context pack",
+      "expected": ["engine/vinemap/pack/packer.py"]
+    },
+    {
+      "query": "session memory",
+      "expected": ["engine/vinemap/memory/session.py"]
+    },
+    {
+      "query": "symbol audit",
+      "expected": ["engine/vinemap/pro/audit.py"]
+    },
+    {
+      "query": "connect cursor agent",
+      "expected": ["engine/vinemap/connect.py", "engine/vinemap/agents/cursor.py"]
+    },
+    {
+      "query": "file watcher debounced re-index",
+      "expected": ["engine/vinemap/watch.py"]
+    },
+    {
+      "query": "SQLite incremental content hash store",
+      "expected": ["engine/vinemap/graph/sqlite_store.py"]
+    },
+    {
+      "query": "tree-sitter go imports parser",
+      "expected": ["engine/vinemap/scanner/parsers/treesitter_parser.py"]
+    },
+    {
+      "query": "federated shared graph OIDC teams server",
+      "expected": ["teams/server/federated.py", "teams/server/auth.py"]
+    },
+    {
+      "query": "Stripe checkout webhook license",
+      "expected": ["api/main.py"]
+    },
+    {
+      "query": "monorepo package clusters boundaries",
+      "expected": ["engine/vinemap/scanner/monorepo.py"]
+    }
+  ]
+}

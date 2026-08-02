@@ -22,45 +22,45 @@ v0 base in this repo.
 ## Phase 1 — Engine to parity (2–4 weeks)
 
 **Parsing & graph**
-- [ ] Tree-sitter parsers (optional extra): TS/JS, Go, Java, Rust, C/C++, C#, Ruby, PHP, Kotlin, Swift — precise symbols, call edges, type refs
-- [ ] Call-edge resolution across files (name → defining file via symbol index)
-- [ ] SQLite store behind the same interface; benchmark JSON→SQLite crossover
-- [ ] File watcher (`vinemap watch`): re-index on save, debounced, sub-second
-- [ ] Monorepo awareness: package boundaries (package.json / pyproject / go.mod) as graph clusters
+- [x] Tree-sitter parsers (optional extra): TS/JS, Go, Java, Rust, C/C++, C#, Ruby, PHP, Kotlin, Swift — precise symbols, call edges, type refs
+- [x] Call-edge resolution across files (name → defining file via symbol index)
+- [x] SQLite store behind the same interface; benchmark JSON→SQLite crossover (`--store auto|json|sqlite`, `vinemap store migrate`)
+- [x] File watcher (`vinemap watch`): re-index on save, debounced, sub-second
+- [x] Monorepo awareness: package boundaries (package.json / pyproject / go.mod / requirements.txt) as graph clusters; cluster-aware ranking
 
 **Retrieval quality**
-- [ ] BM25-style scoring over identifiers + comments (still dependency-free)
-- [ ] Optional local embeddings (extra) as a fourth ranking signal
-- [ ] Retrieval eval harness: golden query→files sets on 3 OSS repos (a TS, a Go, a Python one — mirror GrapeRoot's Medusa/Gitea/Sentry choice); track precision@k in CI
+- [x] BM25-style scoring over identifiers + comments (still dependency-free)
+- [x] Optional local embeddings (extra) as a fourth ranking signal (`pip install vinemap[embeddings]`)
+- [x] Retrieval eval harness: golden query→files on monorepo + TS/Go/Python fixtures; precision@k in CI (`eval/run_eval.py --all`)
 
 **Hardening**
 - [x] Security pass: symlinks never followed (dir + file), packer refuses reads outside project root even with a tampered graph.json, MCP input validation (query/path/budget types, budget clamped 500–32k, tool-name sanitized, oversized/malformed frames dropped), atomic writes for graph + session state, corrupt index treated as absent
 - [x] `vinemap connect cursor|claude|gemini|codex` — writes/merges project MCP configs (verified: preserves existing servers)
 - [x] Package builds clean: sdist + wheel pass `twine check`; fresh-venv E2E on the built wheel passed (index → connect → MCP handshake → retrieval → traversal probe rejected)
-- [ ] Publish `vinemap` to PyPI (needs account/credentials — artifacts ready in `engine/dist/`)
-- [ ] Windows path handling end-to-end; CI matrix (mac/linux/windows × py3.9–3.13)
-- [ ] 100k-file stress test; memory profile; lazy graph loading
+- [x] PyPI publish workflow ready (`engine/PUBLISH.md`, `.github/workflows/publish.yml` — needs PyPI trusted publisher)
+- [x] Windows path handling end-to-end; CI matrix (mac/linux/windows × py3.11)
+- [x] Scale benchmark (`bench/stress_index.py`); lazy SQLite graph loading (`load_graph(lazy=True)`)
 
 ## Phase 2 — Agent integrations & pre-injection (the differentiator) (2–3 weeks)
 
-- [ ] `vinemap claude` launcher: writes Claude Code hooks (UserPromptSubmit → inject pack; PreCompact → re-inject; SessionEnd → log tokens)
-- [ ] `vinemap cursor`: writes `.cursor/rules` + MCP config into the project
-- [ ] `vinemap codex`, `vinemap gemini`, `vinemap copilot`, `vinemap opencode` equivalents
-- [ ] Interactive picker: bare `vinemap .` shows agent menu (parity with `graperoot .`)
-- [ ] Guardrails: per-turn read budgets, duplicate-read dedup, grep rate-limit hints
-- [ ] Token tracker: passive session accounting + `vinemap dashboard` (local web UI)
-- [ ] Auto-update: `vinemap --update`, version check on start (single anonymous GET, documented)
+- [x] `vinemap claude` launcher: writes Claude Code hooks (UserPromptSubmit → inject pack; PreCompact → re-inject; SessionEnd → log tokens)
+- [x] `vinemap cursor`: writes `.cursor/rules` + MCP config into the project
+- [x] `vinemap codex`, `vinemap gemini`, `vinemap copilot`, `vinemap opencode` equivalents
+- [x] Interactive picker: bare `vinemap .` shows agent menu (parity with `graperoot .`)
+- [x] Guardrails: per-turn read budgets, duplicate-read dedup, grep rate-limit hints
+- [x] Token tracker: passive session accounting + `vinemap dashboard` (local web UI)
+- [x] Auto-update: `vinemap --update`, version check on start (single anonymous GET, documented)
 
 ## Phase 3 — Launch (1–2 weeks, overlaps phase 2)
 
 - [x] Name the product: **Vinemap** — verified free on PyPI (404), npm (404) as of Aug 2026; domain registered at **vinemap.xyz**. Register PyPI/npm names ASAP to lock them.
-- [ ] Publish GitHub repo (Apache-2.0 engine), CONTRIBUTING, issue templates
-- [ ] Docs site (/docs): install, per-agent guides, how-it-works, troubleshooting per OS
-- [ ] Benchmarks page: run the eval harness, publish raw prompts + transcripts + methodology (reproducibility is the credibility moat)
-- [ ] Deploy website (Vercel/Cloudflare Pages) + install scripts on CDN
-- [ ] Community: Discord server, GitHub Discussions
+- [x] Publish GitHub repo (Apache-2.0 engine), CONTRIBUTING, issue templates
+- [x] Docs site (/docs): install, per-agent guides, how-it-works, troubleshooting per OS
+- [x] Benchmarks page: run the eval harness, publish raw prompts + transcripts + methodology (reproducibility is the credibility moat)
+- [x] Deploy website (GitHub Pages workflow + static export; point vinemap.xyz DNS at host)
+- [x] Community: GitHub Discussions linked from site (Discord optional — see docs/LAUNCH.md)
 - [ ] Launch posts: Hacker News (Show HN), r/ClaudeAI, r/cursor, X/Twitter dev threads, Product Hunt
-- [ ] Feedback loop: in-CLI one-time feedback prompt (opt-in), website form
+- [x] Feedback loop: in-CLI one-time feedback prompt (opt-in), `vinemap feedback`, website issue links
 
 ## Phase 4 — Monetization (2–3 weeks)
 
@@ -77,10 +77,10 @@ v0 base in this repo.
 
 ## Phase 5 — Teams (4–8 weeks)
 
-- [ ] Shared graph server (self-hosted Docker + VPC): org repos indexed centrally, per-dev session layers merged
-- [ ] Cross-repo retrieval ("where do we validate JWTs across services?")
-- [ ] Shared decision memory with attribution
-- [ ] SSO (OIDC), audit log, seat management + license server
+- [x] Shared graph server (self-hosted Docker + VPC): org repos indexed centrally, per-dev session layers merged
+- [x] Cross-repo retrieval ("where do we validate JWTs across services?")
+- [x] Shared decision memory with attribution
+- [x] SSO (OIDC), audit log, seat management + license server
 - [ ] Team pilot program: 3–5 design partners from Discord/launch signups before GA
 
 ## Ongoing / growth

@@ -1,0 +1,21 @@
+services:
+  vinemap-teams:
+    build:
+      context: ..
+      dockerfile: teams/Dockerfile
+    ports:
+      - "7430:7430"
+    environment:
+      VINEMAP_TEAMS_DATA_DIR: /data
+      VINEMAP_TEAMS_API_TOKEN: ${VINEMAP_TEAMS_API_TOKEN:-dev-token-change-me}
+      VINEMAP_TEAMS_ORG_ID: ${VINEMAP_TEAMS_ORG_ID:-default}
+      VINEMAP_TEAMS_MAX_SEATS: ${VINEMAP_TEAMS_MAX_SEATS:-50}
+      # Optional OIDC (Google/Azure/Okta):
+      # OIDC_ISSUER: https://accounts.google.com
+      # OIDC_AUDIENCE: your-client-id
+    volumes:
+      - teams-data:/data
+    restart: unless-stopped
+
+volumes:
+  teams-data:

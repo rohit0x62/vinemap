@@ -53,6 +53,7 @@ class ParsedFile:
     imports: List[str] = field(default_factory=list)  # raw import specifiers
     line_count: int = 0
     content_hash: str = ""
+    module_docstring: str = ""
 
     def to_dict(self) -> dict:
         return {
@@ -62,6 +63,7 @@ class ParsedFile:
             "imports": self.imports,
             "line_count": self.line_count,
             "content_hash": self.content_hash,
+            "module_docstring": self.module_docstring,
         }
 
     @staticmethod
@@ -73,6 +75,7 @@ class ParsedFile:
             imports=d.get("imports", []),
             line_count=d.get("line_count", 0),
             content_hash=d.get("content_hash", ""),
+            module_docstring=d.get("module_docstring", ""),
         )
 
 

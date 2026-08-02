@@ -63,3 +63,16 @@ class SessionMemory:
 
     def recent_decisions(self, n: int = 5) -> List[str]:
         return [d["text"] for d in self.decisions[-n:]]
+
+    def record_tokens(self, count: int, source: str = "retrieve") -> None:
+        self.events.append({"path": f"__tokens__:{source}", "action": "tokens", "ts": time.time(), "count": count})
+
+    def total_tokens_saved(self) -> int:
+        """Rough estimate of tokens delivered via graph retrieval vs cold exploration."""
+        total = 0
+        for ev in self.events:
+            if ev.get("action") == "tokens":
+                total += int(ev.get("count", 0))
+            elif ev.get("action") == "retrieved":
+                total += 800  # avg pack size heuristic
+        return total
